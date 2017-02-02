@@ -17,12 +17,14 @@ function createReadStream (path, options) {
     var watcher;
     var reading = false;
     var watching = false;
+    var synced = false;
     rs
       .once('open', function () {
         chunkSize = rs._readableState.highWaterMark;
         if (tail) {
           watcher = fs.watch(path, function (eventType, fileName) {
-            if (!reading) {
+            // only kick of a read if already hit the end of the file
+            if (!reading && synced) {
               reading = true;
               readChunk();
             }
@@ -42,6 +44,7 @@ function createReadStream (path, options) {
         if (!tail) {
           ds.push(null);
         }
+        synced = true;
         ds.emit('sync');
       })
       .pipe(ds, { end: false });
