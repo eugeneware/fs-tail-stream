@@ -1,6 +1,6 @@
 {
   "name": "fs-tail-stream",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "fs.createReadStream that supports ongoing tailing of files",
   "main": "index.js",
   "scripts": {
