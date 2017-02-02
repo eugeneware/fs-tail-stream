@@ -9,6 +9,7 @@ function createReadStream (path, options) {
   var ds = stream.Duplex({ objectMode: true });
   options.autoClose = false;
   var tail = options && !options.end && options.tail;
+  var bytesRead = 0;
   ds._read = once(function () {
     var rs = fs.createReadStream(path, options);
     var chunkSize = 64 * 1024;
@@ -37,7 +38,7 @@ function createReadStream (path, options) {
         }
       })
       .once('end', function () {
-        pos = rs.bytesRead + (options && options.start || 0);
+        pos = bytesRead + (options && options.start || 0);
         if (!tail) {
           ds.push(null);
         }
@@ -65,6 +66,7 @@ function createReadStream (path, options) {
   });
 
   ds._write = function (data, enc, cb) {
+    bytesRead += Buffer.byteLength(data);
     ds.push(data);
     cb();
   };
