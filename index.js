@@ -10,6 +10,12 @@ function createReadStream (path, options) {
   options.autoClose = false;
   var tail = options && !options.end && options.tail;
   var bytesRead = 0;
+  var close = function () {
+  };
+
+  ds.close = function () {
+    close();
+  };
   ds._read = once(function () {
     var rs = fs.createReadStream(path, options);
     var chunkSize = 64 * 1024;
@@ -30,7 +36,7 @@ function createReadStream (path, options) {
             }
           });
           watching = true;
-          ds.close = function () {
+          close = function () {
             watching = false;
             watcher.close();
             if (!reading) {
