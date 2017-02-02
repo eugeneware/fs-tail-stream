@@ -77,7 +77,7 @@ it('should be able to stream from a growing file', function (t) {
           var data = 'new line ' + count + '\n';
           ws.write(data, 'utf8', function (err) {
             if (err) return t.error(err);
-            setTimeout(write, 1000);
+            setImmediate(write);
           });
         } else {
           self.close();
