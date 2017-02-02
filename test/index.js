@@ -4,12 +4,13 @@ var concat = require('concat-stream');
 var fst = require('..');
 var fs = require('fs');
 var it = redtape(beforeEach, afterEach);
+var os = require('os');
 
 function fixture (fileName) {
   return path.join(__dirname, 'fixtures', fileName);
 }
 
-var tmpFile = '/tmp/lines-' + Date.now() + '.txt';
+var tmpFile = path.join(os.tmpdir(), 'lines-' + Date.now() + '.txt');
 function beforeEach (cb) {
   fs.createReadStream(fixture('lines.txt'))
     .pipe(fs.createWriteStream(tmpFile))
