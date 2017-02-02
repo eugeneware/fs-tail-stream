@@ -30,6 +30,7 @@ function createReadStream (path, options) {
         if (tail) {
           watcher = fs.watch(path, function (eventType, fileName) {
             // only kick of a read if already hit the end of the file
+            ds.emit('change');
             if (!reading && synced) {
               reading = true;
               readChunk();
