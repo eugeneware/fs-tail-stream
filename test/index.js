@@ -97,3 +97,41 @@ it('should be able to stream from a growing file', function (t) {
       t.end();
     }));
 });
+
+it('should be able to stream from a growing file being streamed', function (t) {
+  t.plan(1);
+  var ws = fs.createWriteStream(tmpFile, { flags: 'a' });
+  var rs = fst.createReadStream(tmpFile, { encoding: 'utf8', start: 80, tail: true });
+  var byteCount = 0;
+  rs
+    .on('data', function (data) {
+      byteCount += Buffer.byteLength(data);
+      // wait until we've got everything
+      if (byteCount === 42) {
+        rs.close();
+      }
+    })
+    .pipe(concat(function (data) {
+      var expected = [
+        'Heh-haa!',
+        'new line 1',
+        'new line 2',
+        'new line 3',
+        ''
+      ].join('\n');
+      t.equal(data, expected);
+      t.end();
+    }));
+
+  var count = 0;
+  function write () {
+    if (count++ < 3) {
+      var data = 'new line ' + count + '\n';
+      ws.write(data, 'utf8', function (err) {
+        if (err) return t.error(err);
+        setImmediate(write);
+      });
+    }
+  }
+  write();
+});
