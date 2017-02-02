@@ -58,7 +58,7 @@ function createReadStream (path, options) {
     function readChunk () {
       var b = Buffer.alloc(chunkSize);
       fs.read(rs.fd, b, 0, chunkSize, pos, function (err, bytesRead) {
-        if (err) return ds.emit(err);
+        if (err) return ds.emit('error', err);
         if (bytesRead) {
           pos += bytesRead;
           var data = b.slice(0, bytesRead).toString(options.encoding);
