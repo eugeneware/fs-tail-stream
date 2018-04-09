@@ -62,7 +62,10 @@ function createReadStream (path, options) {
         if (err) return ds.emit('error', err);
         if (bytesRead) {
           pos += bytesRead;
-          var data = b.slice(0, bytesRead).toString(options.encoding);
+          var data = b.slice(0, bytesRead);
+          if (options.encoding) {
+            data = data.toString(options.encoding);
+          }
           ds.push(data);
           setImmediate(readChunk);
         } else if (reading) {
