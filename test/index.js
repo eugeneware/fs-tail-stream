@@ -135,3 +135,22 @@ it('should be able to stream from a growing file being streamed', function (t) {
   }
   write();
 });
+
+it('should stream Buffer instances when encoding is not set', function (t) {
+  t.plan(3);
+  var ws = fs.createWriteStream(tmpFile, { flags: 'a' });
+  var rs = fst.createReadStream(tmpFile, { tail: true });
+
+  rs.on('data', function (chunk) {
+    t.ok(Buffer.isBuffer(chunk));
+  });
+
+  rs.on('sync', function () {
+    setImmediate(function () {
+      ws.write('test2\n', function (err) {
+        t.ifError(err);
+        rs.close();
+      });
+    });
+  });
+});
